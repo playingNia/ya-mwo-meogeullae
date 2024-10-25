@@ -243,7 +243,8 @@ def select_hot_type(type):
     time.sleep(1.5)
     send_system_msg("잠시만...")
 
-    food = get_food()
+    # food = get_food()
+    food = "닭갈비"
     send_system_msg(f"{food} 어때?")
     ask_satisfied(food)
 
@@ -278,21 +279,29 @@ def get_food():
     print(f"GPT : {response.choices[0]['text']}")
     return response.choices[0]["text"]
 
-# def get_other_food():
-#     response = openai.Completion.create(
-#         model="gpt-3.5-turbo",
-#         prompt="다른 거",
-#         max_tokens=50,
-#         temperature=0.8
-#     )
-#
-#     return response.choices[0].text.strip()
+def get_other_food():
+    response = openai.completions.create(
+        model="gpt-3.5-turbo",
+        prompt="다른 거",
+        max_tokens=25
+    )
+    print(f"GPT : {response.choices[0]['text']}")
+    return response.choices[0]["text"]
 
 def satisfied():
     global page
     page = "main"
     remove_wigets()
     load_main()
+    
+def is_not_satisfied():
+    remove_option_btn()
+    send_user_msg("다른 메뉴 없을까?")
+    
+    # food = get_other_food()
+    food = "피자"
+    send_system_msg(f"그렇다면 {food} 어때?")
+    ask_satisfied(food)
 
 def ask_satisfied(food):
     button1 = tk.Button(select_frame, text=f"{food} 좋아!", width=40, height=2, bg=BLUE, fg=WHITE, relief="flat", command=lambda: satisfied())
@@ -300,7 +309,7 @@ def ask_satisfied(food):
     option_btns.append(button1)
 
     # TODO: 마음에 안들 때
-    button2 = tk.Button(select_frame, text=f"{food}은(는) 별로... 다른 거 없을까?", width=40, height=2, bg=GRAY, fg=BLACK, relief="flat", command=lambda: select_hot_type(False))
+    button2 = tk.Button(select_frame, text=f"{food}은(는) 별로... 다른 거 없을까?", width=40, height=2, bg=GRAY, fg=BLACK, relief="flat", command=lambda: is_not_satisfied())
     button2.grid(row=1, column=0, pady=5)
     option_btns.append(button2)
 
